@@ -29,7 +29,7 @@ def forms():
     cursor = con.cursor()
     cursor.execute(f"INSERT INTO usuario (usuario, email, senha) VALUES ('{usuario}', '{email}', '{senha}')")
     con.commit()
-    con.close()
+    # con.close()
     print(usuario, email, senha)
     return 'foi'
 
