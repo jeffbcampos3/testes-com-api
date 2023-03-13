@@ -83,10 +83,17 @@ try:
         email = request.json['email']
         senha = request.json['senha']
         id_usuario = request.json['id_usuario']
-        sql = f"UPDATE usuarios SET nome=%s, email =%s, senha=%s WHERE id = %s"
-        values = (nome, email, senha, id_usuario)
-        con.queryExecute(sql, values)        
-        return jsonify({'status': 'success'})                
+        if verificaSenha(senha):
+          senha = senha.encode('utf-8')
+          salt = gensalt()
+          senha = hashpw(senha, salt).decode('utf-8')
+          sql = f"UPDATE usuarios SET nome=%s, email =%s, senha=%s WHERE id = %s"
+          values = (nome, email, senha, id_usuario)
+          con.queryExecute(sql, values)        
+          return jsonify({'status': 'success'})
+        else:
+          return jsonify({'status': 'senhaFraca'})
+                        
     
     @app.route("/inserirFilme", methods =['POST'])
     def inserirFilme():
