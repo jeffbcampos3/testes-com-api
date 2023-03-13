@@ -9,14 +9,14 @@ class Conexao:
         self.port = port
         self.database = database
     
-    def queryExecute(self, sql):
+    def queryExecute(self, sql, values):
 
         try:
             con = connect(host=self.host, user=self.user, password=self.password, port=self.port, database=self.database)
 
             cursor = con.cursor()
 
-            cursor.execute(sql)
+            cursor.execute(sql, values)
 
             con.commit()
 
@@ -29,7 +29,7 @@ class Conexao:
         except Error as error:
             return f"Ocorreu um erro {error}"
     
-    def querySelect(self,sql):
+    def querySelect(self, sql):
         try:
             con = connect(host=self.host, user=self.user, password=self.password, port=self.port, database=self.database)
             
