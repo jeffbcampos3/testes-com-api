@@ -39,11 +39,21 @@ try:
         else:
           return jsonify({'status' : 'sucess'})
           
-    @app.route("/series/<int:id>", methods =['GET'])
-    def consultarSeries(id):
-      sql = f"SELECT * FROM series WHERE id_usuario = '{id}'"
-      results = con.querySelect(sql)      
-      return results
+    @app.route("/series/<int:id>", methods =['GET', 'POST'])
+    def consultarSeries(id):      
+      if(request.method == 'GET'):
+        sql = f"SELECT * FROM series WHERE id_usuario = '{id}'"        
+        results = con.querySelect(sql)
+        return results
+      elif(request.method == 'POST'):
+        titulo = request.json['titulo']
+        id_usuario = request.json['id_usuario']
+        sql = f"SELECT * FROM series WHERE titulo = '{titulo}' AND id_usuario = '{id_usuario}'"        
+        resposta = con.querySelect(sql)
+        if(resposta == []):
+          return jsonify({'status' : 'fail'})
+        else:
+          return jsonify({'status' : 'sucess'})
     
     @app.route("/listaDesejo/<int:id>", methods =['GET'])
     def consultarListaDesejo(id):
@@ -65,7 +75,18 @@ try:
           access_token = create_access_token(identity=email)       
           return jsonify({'status' : 'sucess', 'id': f'{resposta[0]}', 'nome' : f'{resposta[1]}', 'access_token': f'{access_token}'})        
         else:
-          return jsonify({'status' : 'fail'})          
+          return jsonify({'status' : 'fail'})
+    
+    @app.route('/atualizarUsuario', methods=['POST'])
+    def atualizar_user():        
+        nome = request.json['nome']
+        email = request.json['email']
+        senha = request.json['senha']
+        id_usuario = request.json['id_usuario']
+        sql = f"UPDATE usuarios SET nome=%s, email =%s, senha=%s WHERE id = %s"
+        values = (nome, email, senha, id_usuario)
+        con.queryExecute(sql, values)        
+        return jsonify({'status': 'success'})                
     
     @app.route("/inserirFilme", methods =['POST'])
     def inserirFilme():
@@ -146,6 +167,24 @@ try:
       id_usuario = request.json['id_usuario']
       sql = f"DELETE FROM filmes WHERE id_usuario = '{id_usuario}' AND titulo = '{titulo}'"
       con.queryExecute(sql, values=None)          
+      return jsonify({'status' : 'sucess'})
+    
+    @app.route("/removerSerie", methods = ['POST'])
+    def removerSerie():
+      titulo = request.json['titulo']
+      id_usuario = request.json['id_usuario']
+      sql = f"DELETE FROM series WHERE id_usuario = '{id_usuario}' AND titulo = '{titulo}'"
+      con.queryExecute(sql, values=None)      
+      return jsonify({'status' : 'sucess'})
+    
+    @app.route("/deletarUsuario", methods = ['POST'])
+    def deletarUsuario():
+      id_usuario = request.json['id_usuario']
+      sql = f'''DELETE FROM filmes WHERE id_usuario = '{id_usuario}';
+      DELETE FROM series WHERE id_usuario = '{id_usuario}';
+      DELETE FROM listaDesejo WHERE id_usuario = '{id_usuario}';
+      DELETE FROM usuarios WHERE id = '{id_usuario}';'''
+      con.queryExecute(sql, values=None)      
       return jsonify({'status' : 'sucess'})
     
     
