@@ -10,7 +10,7 @@ from bcrypt import hashpw, gensalt, checkpw
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 
 try:
-    con = Conexao(host=os.getenv("HOST"), user=os.getenv("USER"), password=os.getenv("PASSWORD"), port=os.getenv("PORT"), database=os.getenv("DATABASE"))
+    con = Conexao(host=os.getenv("HOST"), user=os.getenv("USER"), password=os.getenv("PASSWORD"), port=os.getenv("PORT"), database=os.getenv("DATABASE"))   
         
     app = Flask(__name__)
     app.config['JWT_SECRET_KEY'] = 'fcfded42-c0fc-11ed-afa1-0242ac120002'
